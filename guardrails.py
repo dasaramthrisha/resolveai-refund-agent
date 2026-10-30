@@ -23,6 +23,15 @@ def _base_guardrails(message, reply):
 
     rule = decide_refund(order_id)
 
+    # Hard policy rejects (outside return window, unknown order) are decided by the rules
+    if rule["decision"] == "reject":
+        if ai_decision == "approve":
+            return {
+                "final": "reject",
+                "note": f"GUARDRAIL: AI tried to approve, but rules say reject ({rule['reason']})",
+            }
+        return {"final": "reject", "note": f"Rules: {rule['reason']}"}
+
     if ai_decision == rule["decision"]:
         return {"final": ai_decision, "note": "AI and rules agree"}
     if ai_decision == "approve":

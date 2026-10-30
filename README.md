@@ -38,6 +38,12 @@ flowchart LR
 - Complaint analysis, plus an optional photo check
 - Fallback between several Gemini models and automatic retries
 - Web interface with a decision history
+## Screenshots
+
+![Approved refund](screenshots/approve.png)
+![Rejected refund](screenshots/reject.png)
+![Escalated to a human](screenshots/escalate.png)
+![Prompt injection blocked](screenshots/manager-trick.png)
 
 ## Tech stack
 

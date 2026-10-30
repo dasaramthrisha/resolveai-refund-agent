@@ -1,0 +1,4 @@
+{
+  "return_window_days": 30,
+  "auto_approve_limit": 5000
+}

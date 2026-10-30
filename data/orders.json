@@ -1,0 +1,29 @@
+{
+  "ORD1001": {
+    "customer_id": "C01",
+    "item": "Bluetooth Speaker",
+    "price": 2499,
+    "delivered_on": "2026-10-15",
+    "status": "delivered"
+  },
+  "ORD1002": {
+    "customer_id": "C02",
+    "item": "Running Shoes",
+    "price": 5999,
+    "delivered_on": "2026-08-01",
+    "status": "delivered"
+  },
+  "ORD1003": {
+    "customer_id": "C02",
+    "item": "Headphones",
+    "price": 1999,
+    "delivered_on": "2026-10-20",
+    "status": "delivered"
+  },
+  "ORD1004": {
+    "customer_id": "C01",
+    "item": "Smart Watch",
+    "price": 8999,
+    "delivered_on": "2026-10-22",
+    "status": "delivered"
+  }} 

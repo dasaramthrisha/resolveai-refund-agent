@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ResolveAI</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; background: #0f2a1f; color: #e8f3ec; margin: 0; padding: 24px; }
+  .box { max-width: 760px; margin: auto; }
+  h1 { margin-bottom: 4px; }
+  p.sub { margin-top: 0; color: #9fc5ae; }
+  textarea { width: 100%; height: 100px; padding: 10px; border-radius: 8px; border: none; font-size: 15px; box-sizing: border-box; }
+  button { margin-top: 10px; padding: 10px 20px; border: none; border-radius: 8px; background: #22c55e; color: #06210f; font-weight: bold; font-size: 15px; cursor: pointer; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .card { background: #163826; border-radius: 10px; padding: 14px; margin-top: 16px; }
+  .badge { display: inline-block; padding: 3px 12px; border-radius: 12px; font-weight: bold; }
+  .APPROVE { background: #22c55e; color: #06210f; }
+  .REJECT { background: #ef4444; color: #fff; }
+  .ESCALATE { background: #f59e0b; color: #2b1a00; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td, th { padding: 6px; border-bottom: 1px solid #285c40; text-align: left; vertical-align: top; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>ResolveAI</h1>
+  <p class="sub">Customer issues, resolved (safely).</p>
+  <textarea id="msg" placeholder="e.g. I want a refund for order ORD1001. It arrived damaged."></textarea>
+  <button id="go">Submit request</button>
+  <div id="result"></div>
+  <h3>Recent decisions</h3>
+  <div class="card"><table id="log"></table></div>
+</div>
+
+<script>
+  const go = document.getElementById("go");
+  const msg = document.getElementById("msg");
+  const result = document.getElementById("result");
+  const logT = document.getElementById("log");
+
+  async function loadLogs() {
+    const r = await fetch("/api/logs");
+    const data = await r.json();
+    logT.innerHTML = "";
+    const head = logT.insertRow();
+    ["Time", "Message", "Decision"].forEach(function (h) {
+      const c = document.createElement("th");
+      c.textContent = h;
+      head.appendChild(c);
+    });
+    data.forEach(function (e) {
+      const row = logT.insertRow();
+      [e.time, e.message, e.final.toUpperCase()].forEach(function (v) {
+        row.insertCell().textContent = v;
+      });
+    });
+  }
+
+  go.onclick = async function () {
+    const text = msg.value.trim();
+    if (!text) return;
+    go.disabled = true;
+    go.textContent = "Working...";
+    result.innerHTML = "";
+    try {
+      const r = await fetch("/api/refund", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+      const d = await r.json();
+      const card = document.createElement("div");
+      card.className = "card";
+      if (d.error) {
+        card.textContent = d.error;
+      } else {
+        const badge = document.createElement("span");
+        badge.className = "badge " + d.final.toUpperCase();
+        badge.textContent = d.final.toUpperCase();
+        const note = document.createElement("p");
+        note.textContent = d.note;
+        const reply = document.createElement("p");
+        reply.textContent = d.reply;
+        card.append(badge, note, reply);
+      }
+      result.appendChild(card);
+      loadLogs();
+    } catch (e) {
+      result.textContent = "Something went wrong. Try again.";
+    }
+    go.disabled = false;
+    go.textContent = "Submit request";
+  };
+
+  loadLogs();
+</script>
+</body>
+</html>
